@@ -9,6 +9,11 @@ app = Flask(__name__)
 def homepage():
     return render_template('index.html')
 
+@app.route('/predict', methods=['POST'])
+def predict():
+    pclass = request.form['pclass']
+
+    print(pclass)
 
 if __name__ == '__main__':
     app.run(debug=True)
