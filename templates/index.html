@@ -16,40 +16,47 @@
 
 <body>
     <form action="/predict" method="POST">
+        <div class="input-field">
+            <label for="pclass">Enter Passenger Class</label>
+            <select name="pclass" id="pclass" required>
+                <option value="">Select an Option</option>
+                <option value="1">Class 1</option>
+                <option value="2">Class 2</option>
+                <option value="3">Class 3</option>
+            </select>
+        </div>
+        <div class="input-field">
+            <label for="sex">Enter your Gender</label>
+            <input type="radio" id="male" value="male" name="sex">
+            <label for="male">Male</label>
 
-        <label for="pclass">Enter Passenger Class</label>
-        <select name="pclass" id="pclass" required>
-            <option value="">Select an Option</option>
-            <option value="1">Class 1</option>
-            <option value="2">Class 2</option>
-            <option value="3">Class 3</option>
-        </select>
-
-        
-        <input type="radio" id="male" value="male" name="sex">
-        <label for="male">Male</label>
-
-        <input type="radio" id="female" value="female" name="sex">
-        <label for="male">Female</label>
-
-        <label for="age">Age in years</label>
-        <input type="number" placeholder="Enter the age of the person" id="age" name="age">
-
-        <label for="sibsp">No. of Siblings/Spouses abroad</label>
-        <input type="number" placeholder="Enter the number" id="sibsp" name="sibsp">
-
-        <label for="parch">No. of Parents/Children aboard</label>
-        <input type="number" placeholder="Enter the number" id="parch" name="parch">
-
-        <label for="fare">Enter the fare charged</label>
-        <input type="number" placeholder="Enter the Passenger fare" id="fare" name="fare">
-
-        <label for="embarked">Port of Embarkation</label>
-        <select name="embarked" id="embarked" selected>
-            <option value="C">Cherbourg</option>
-            <option value="Q">Queenstown</option>
-            <option value="S">Southampton</option>
-        </select>
+            <input type="radio" id="female" value="female" name="sex">
+            <label for="male">Female</label>
+        </div>
+        <div class="input-field">
+            <label for="age">Age in years</label>
+            <input type="number" placeholder="Enter the age of the person" id="age" name="age">
+        </div>
+        <div class="input-field">
+            <label for="sibsp">No. of Siblings/Spouses abroad</label>
+            <input type="number" placeholder="Enter the number" id="sibsp" name="sibsp">
+        </div>
+        <div class="input-field">
+            <label for="parch">No. of Parents/Children aboard</label>
+            <input type="number" placeholder="Enter the number" id="parch" name="parch">
+        </div>
+        <div class="input-field">
+            <label for="fare">Enter the fare charged</label>
+            <input type="number" placeholder="Enter the Passenger fare" id="fare" name="fare">
+        </div>
+        <div class="input-field">
+            <label for="embarked">Port of Embarkation</label>
+            <select name="embarked" id="embarked" selected>
+                <option value="C">Cherbourg</option>
+                <option value="Q">Queenstown</option>
+                <option value="S">Southampton</option>
+            </select>
+        </div>
         <input type="submit" value="Predict">
     </form>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
