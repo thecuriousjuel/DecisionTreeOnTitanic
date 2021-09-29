@@ -1,16 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Titanic Survival using Decision Tree</title>
 </head>
+
 <body>
     <form action="/predict" method="POST">
         <label for="pclass">Passenger Class</label>
-        <input type="number" placeholder="Enter the Passenger class">
+        <select name="pclass" id="pclass">
+            <option value="1" selected>Class 1</option>
+            <option value="2">Class 2</option>
+            <option value="3">Class 3</option>
+        </select>
 
         <label for="sex">Sex</label>
-        <input type="number" placeholder="Enter the gender of the person" id="sex">
+        <input type="radio" id="male" name="sex" value="male">
+        <input type="radio" id="female" name="sex" value="female">
+
 
         <label for="age">Age in years</label>
         <input type="number" placeholder="Enter the age of the person" id="age">
@@ -25,8 +33,13 @@
         <input type="number" placeholder="Enter the Passenger fare" id="fare">
 
         <label for="embarked">Port of Embarkation</label>
-        <input type="text" placeholder="C = Cherbourg, Q = Queenstown, S = Southampton" id="embarked">
+        <select name="embarked" id="embarked" selected>
+            <option value="C">Cherbourg</option>
+            <option value="Q">Queenstown</option>
+            <option value="S">Southampton</option>
+        </select>
 
     </form>
 </body>
+
 </html>
