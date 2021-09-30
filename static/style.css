@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik&display=swap');
+
+body{
+    font-family: 'Rubik', sans-serif;
+    background-color: beige;
+    font-size: large;
+}
+
+table tbody .survived{
+    background-color: rgba(140, 194, 60, 0.753);
+}
+
+.form-data{
+    background-color: white;
+    border: solid black 2px;
+    margin-left: 20em;
+    margin-right: 20em;
+    margin-top: 5em;
+    padding: 1em;
+    height: 80em;
+    padding-left: 20em;
+}
+
+label{
+    display: inline-block;
+    width: 200px;
+}
+
+.input-field{
+    margin: 1em;
+}
+
+.data-field{
+    margin-left: 10px;
+}
+.submit-button{
+    margin-left: 30%;
+}
+
+h3{
+    margin-left: 10em;
+}
+.form-data .bigger{
+    font-size: 70px;
+    font-weight: bold;
+}
