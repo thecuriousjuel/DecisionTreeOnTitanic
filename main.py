@@ -22,7 +22,7 @@ def predict_data():
     fare = request.form['fare']
     embarked = request.form['embarked']
 
-    df = pd.DataFrame([[pclass, sex, age, sibsp, parch, fare, embarked]], columns=['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'E mbarked'])
+    df = pd.DataFrame([[pclass, sex, age, sibsp, parch, fare, embarked]], columns=['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked'])
 
     output = preprocess_and_model(df)
 
@@ -43,7 +43,7 @@ def predict_file():
 
 
 def preprocess_and_model(df):
-    features_name = ['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'E mbarked']
+    features_name = ['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']
 
     df = df[features_name].copy()
 
@@ -57,5 +57,5 @@ def preprocess_and_model(df):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
 

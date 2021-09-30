@@ -2,23 +2,20 @@
 
 body{
     font-family: 'Rubik', sans-serif;
-    background-color: beige;
     font-size: large;
-}
-
-table tbody .survived{
-    background-color: rgba(140, 194, 60, 0.753);
+    background-image: url('pic.jpg');
+    background-size: auto;
 }
 
 .form-data{
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.801);
     border: solid black 2px;
     margin-left: 20em;
     margin-right: 20em;
     margin-top: 5em;
     padding: 1em;
-    height: 80em;
-    padding-left: 20em;
+    height: 90em;
+    padding-left: 10em;
 }
 
 label{
@@ -34,7 +31,7 @@ label{
     margin-left: 10px;
 }
 .submit-button{
-    margin-left: 30%;
+    margin-left: 20%;
 }
 
 h3{
@@ -44,3 +41,7 @@ h3{
     font-size: 70px;
     font-weight: bold;
 }
+
+input[type=number], input[type=submit] {
+    width: 50%;
+  }
