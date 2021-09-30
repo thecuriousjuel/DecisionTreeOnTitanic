@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'DecisionTreeOnTitanic'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E1CE5449E7754EB59C872DA8A0CD91FB }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BA8CC093B3C64DED8324A76C4E95A216 }}
