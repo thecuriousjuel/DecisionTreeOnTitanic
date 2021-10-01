@@ -3,16 +3,16 @@ import joblib
 import pandas as pd
 
 
-app = Flask(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000
+application = Flask(__name__)
+application.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000
 
 
-@app.route('/', methods=['GET'])
+@application.route('/', methods=['GET'])
 def homepage():
     return render_template('index.html')
 
 
-@app.route('/predict_data', methods=['POST'])
+@application.route('/predict_data', methods=['POST'])
 def predict_data():
     pclass = request.form['pclass']
     sex = request.form['sex']
@@ -29,7 +29,7 @@ def predict_data():
     return render_template('output.html', data=df.values, columns=df.columns, output=output)
 
 
-@app.route('/predict_file', methods=['POST'])
+@application.route('/predict_file', methods=['POST'])
 def predict_file():
     file = request.files['file']
 
@@ -57,5 +57,5 @@ def preprocess_and_model(df):
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    application.run(debug=False)
 
