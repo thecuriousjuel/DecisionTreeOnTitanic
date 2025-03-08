@@ -78,7 +78,7 @@ pyparsing
 python-dateutil
 python-json-logger
 pytz
-pywin32
+pywin32; platform_system=="Windows"
 pywinpty
 PyYAML
 pyzmq
