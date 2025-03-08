@@ -40,6 +40,7 @@ table {
   align-items: center;
   background-color: #333;
   padding: 10px;
+  width: 100%; /* Added to match table width */
 }
 
 .navbar a {
