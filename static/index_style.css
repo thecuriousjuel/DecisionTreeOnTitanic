@@ -1,47 +1,133 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Rubik&display=swap");
 
-body{
-    font-family: 'Rubik', sans-serif;
-    font-size: large;
-    background-image: url('pic.jpg');
-    background-size: auto;
-}
-
-.form-data{
-    background-color: rgba(255, 255, 255, 0.801);
-    border: solid black 2px;
-    margin-left: 20em;
-    margin-right: 20em;
-    margin-top: 5em;
-    padding: 1em;
-    height: 90em;
-    padding-left: 10em;
+body {
+  font-family: "Rubik", sans-serif;
+  font-size: large;
+  background-image: url("pic.png");
+  background-size: cover;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
-label{
-    display: inline-block;
-    width: 200px;
+.form-data {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border: solid black 2px;
+  margin: 5em auto;
+  max-width: 600px;
 }
 
-.input-field{
-    margin: 1em;
+label {
+  display: inline-block;
+  width: 100%;
 }
 
-.data-field{
-    margin-left: 10px;
-}
-.submit-button{
-    margin-left: 20%;
+.input-field {
+  margin: 1em 0;
 }
 
-h3{
-    margin-left: 10em;
-}
-.form-data .bigger{
-    font-size: 70px;
-    font-weight: bold;
+.data-field {
+  margin-left: 10px;
 }
 
-input[type=number], input[type=submit] {
-    width: 50%;
+.submit-button {
+  display: block;
+  width: 100%;
+}
+
+h3 {
+  text-align: center;
+}
+
+.form-data .bigger {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+input[type="number"],
+input[type="submit"] {
+  width: 100%;
+}
+
+.container {
+  max-width: 960px;
+}
+
+/* Navbar styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 10px;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  padding: 14px 20px;
+  display: block;
+}
+
+.navbar a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.navbar .menu-icon {
+  display: none;
+}
+
+.navbar.responsive .navbar-links a {
+  display: block;
+  text-align: left;
+}
+
+/* Media Queries for responsiveness */
+@media (max-width: 768px) {
+  .form-data {
+    margin: 2em auto;
+    padding: 15px;
   }
+
+  .submit-button {
+    width: 100%;
+  }
+
+  input[type="number"],
+  input[type="submit"] {
+    width: 100%;
+  }
+
+  .navbar .navbar-links a {
+    display: none;
+  }
+
+  .navbar .menu-icon {
+    display: block;
+    cursor: pointer;
+  }
+
+  .navbar.responsive .navbar-links a {
+    display: block;
+  }
+}
+
+@media (max-width: 576px) {
+  .form-data {
+    margin: 1em auto;
+    padding: 10px;
+  }
+
+  .submit-button {
+    width: 100%;
+  }
+
+  input[type="number"],
+  input[type="submit"] {
+    width: 100%;
+  }
+}

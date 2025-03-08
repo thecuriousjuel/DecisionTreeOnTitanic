@@ -1,33 +1,83 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Rubik&display=swap");
 
-body{
-    font-family: 'Rubik', sans-serif;
-    font-size: large;
-    background-color: beige;
+body {
+  font-family: "Rubik", sans-serif;
+  font-size: large;
+  background-color: beige;
 }
 
-table tbody .survived{
-    background-color: rgba(140, 194, 60, 0.753);
+table tbody .survived {
+  background-color: rgba(140, 194, 60, 0.753);
 }
 
 .fixTableHead {
-    overflow-y: auto;
-    height: 110px;
-  }
-  .fixTableHead thead th {
-    position: sticky;
-    top: 0;
-  }
-  table {
-    border-collapse: collapse;        
-    width: 100%;
-  }
+  overflow-y: auto;
+  height: 110px;
+}
+.fixTableHead thead th {
+  position: sticky;
+  top: 0;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
 
-  th,
-  td {
-    /* padding: 8px 15px; */
+/* Media Queries */
+@media (max-width: 1200px) {
+  body {
+    font-size: medium;
   }
+  .fixTableHead {
+    height: 90px;
+  }
+}
 
-  th {
-    /* background: #ABDD93; */
+/* Navbar styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 10px;
+  width: 100%; /* Added to match table width */
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  padding: 14px 20px;
+  display: block;
+}
+
+.navbar a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.navbar .menu-icon {
+  display: none;
+}
+
+.navbar.responsive .navbar-links a {
+  display: block;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: small;
   }
+  .fixTableHead {
+    height: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: x-small;
+  }
+  .fixTableHead {
+    height: 50px;
+  }
+}
