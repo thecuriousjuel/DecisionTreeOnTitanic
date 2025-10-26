@@ -102,5 +102,5 @@ def preprocess_and_model(df):
 
 if __name__ == '__main__':
     # Run Flask app in debug mode
-    app.run(debug=False)
+    app.run(debug=True)
 
