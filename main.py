@@ -1,4 +1,6 @@
-from flask import Flask, request, render_template
+import os
+from flask import Flask, request, render_template, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 import joblib
 import pandas as pd
 
@@ -6,6 +8,9 @@ import pandas as pd
 app = Flask(__name__)
 # Set maximum content length for file uploads
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @app.route('/', methods=['GET'])
 def homepage():
@@ -89,8 +94,8 @@ def preprocess_and_model(df):
     df = df[features_name].copy()
 
     # Load pre-trained transformers and model
-    full_transformer = joblib.load('model/full_transformer.pickle')
-    tree_clf = joblib.load('model/tree_clf.pickle')
+    full_transformer = joblib.load(os.path.join(BASE_DIR, 'model', 'full_transformer.pickle'))
+    tree_clf = joblib.load(os.path.join(BASE_DIR, 'model', 'tree_clf.pickle'))
 
     # Preprocess data
     prepared_data = full_transformer.transform(df)
@@ -101,6 +106,10 @@ def preprocess_and_model(df):
     return prediction
 
 if __name__ == '__main__':
-    # Run Flask app in debug mode
-    app.run(debug=True)
+    os.environ.pop("WERKZEUG_SERVER_FD", None)
+    os.environ.pop("WERKZEUG_RUN_MAIN", None)
+    port = int(os.environ.get("TITANIC_PORT", 5104))
+    host = os.environ.get("HOST", "127.0.0.1")
+    print(f"🚀 Titanic Survival App running on http://{host}:{port}")
+    app.run(host=host, port=port, debug=False, use_reloader=False)
 

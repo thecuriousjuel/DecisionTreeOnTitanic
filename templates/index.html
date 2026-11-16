@@ -1,125 +1,370 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
-    <!-- Required meta tags -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titanic Survival Prediction | Decision Tree Classifier</title>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <!-- Tailwind CSS v3 Engine -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='index_style.css') }}">
+    <!-- Theme Logic with Manual Toggle & System Default -->
+    <script>
+        function updateThemeIcon(isDark) {
+            const icon = document.getElementById('themeToggleIcon');
+            if (icon) {
+                icon.className = isDark ? 'bi bi-sun-fill text-sm text-amber-400' : 'bi bi-moon-stars-fill text-sm text-slate-600 dark:text-slate-300';
+            }
+        }
+        function applyCurrentTheme() {
+            const saved = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const isDark = saved === 'dark' || (!saved && prefersDark);
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            updateThemeIcon(isDark);
+        }
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcon(isDark);
+        }
+        applyCurrentTheme();
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (!localStorage.getItem('theme')) {
+                applyCurrentTheme();
+            }
+        });
+        document.addEventListener('DOMContentLoaded', applyCurrentTheme);
+    </script>
 
-    <title>Titanic Survival using Decision Tree</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
-<body>
-    <nav class="navbar">
-        <a href="https://www.thecuriousjuel.com" target="_blank">Made by Biswajit 😎</a>
-        <span class="menu-icon" onclick="toggleMenu()">&#9776;</span>
-        <div class="navbar-links">
-            <a href="https://github.com/thecuriousjuel/DecisionTreeOnTitanic.git" target="_blank">Git Link</a>
-        </div>
-    </nav>
+<body class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-200 antialiased selection:bg-cyan-500 selection:text-white flex flex-col justify-between">
 
-    <div class="container">
-        <div class="form-data">
-            <p class="bigger text-center">Titanic Survival Prediction</p>
-            <h1 class="text-center">Enter Passenger Details</h1>
-            <form action="/predict_data" method="POST">
-                <div class="mb-3">
-                    <label for="pclass" class="form-label">Enter Passenger Class</label>
-                    <select name="pclass" id="pclass" class="form-select" required>
-                        <option value="">Select an Option</option>
-                        <option value="1">Class 1</option>
-                        <option value="2">Class 2</option>
-                        <option value="3">Class 3</option>
-                    </select>
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-700 to-blue-500 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
+                    <i class="bi bi-water text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-slate-900 dark:text-white text-base sm:text-lg">Titanic Survival</span>
+                        <span class="px-2 py-0.5 rounded-full text-xs font-mono font-medium bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800/60">Decision Tree</span>
+                    </div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>RMS Titanic &bull; April 15, 1912</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Theme Toggle Button -->
+                <button type="button" onclick="toggleTheme()" class="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none" title="Toggle Theme" aria-label="Toggle Theme">
+                    <i id="themeToggleIcon" class="bi bi-moon-stars-fill text-sm"></i>
+                </button>
+                <a href="{{ url_for('homepage') }}" class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    <span>Reset</span>
+                </a>
+                <a href="https://thecuriousjuel.com/" class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <i class="bi bi-house-door"></i>
+                    <span class="hidden sm:inline">Portfolio Home</span>
+                </a>
+                <a href="https://github.com/thecuriousjuel/DecisionTreeOnTitanic.git" target="_blank" class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <i class="bi bi-github"></i>
+                    <span class="hidden sm:inline">GitHub</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-1 w-full">
+
+        <!-- Hero Header -->
+        <div class="text-center max-w-3xl mx-auto mb-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800/60 mb-3">
+                <i class="bi bi-compass"></i>
+                <span>White Star Line &bull; Historical Passenger Manifest Analysis</span>
+            </div>
+            <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                Predict Titanic Passenger Survival
+            </h1>
+            <p class="mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-400">
+                Evaluate passenger survival odds using demographic, socioeconomic, and cabin placement indicators modeled with a Decision Tree Classifier.
+            </p>
+
+            <!-- Quick Preset Samples -->
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-2">
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Historical Presets:</span>
+                <button type="button" onclick="fillJackDawson()" class="text-xs font-medium px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700/80 transition-colors">
+                    <i class="bi bi-person-fill me-1"></i>Jack Dawson (3rd Class, Age 20)
+                </button>
+                <button type="button" onclick="fillRoseBukater()" class="text-xs font-medium px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors">
+                    <i class="bi bi-gem me-1"></i>Rose DeWitt Bukater (1st Class, Age 17)
+                </button>
+                <button type="button" onclick="fillCaptainSmith()" class="text-xs font-medium px-3 py-1 rounded-full bg-cyan-50 dark:bg-cyan-950/50 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors">
+                    <i class="bi bi-award me-1"></i>Captain Smith (1st Class, Age 62)
+                </button>
+            </div>
+        </div>
+
+        <!-- Single Passenger Prediction Form -->
+        <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none p-6 sm:p-8 mb-8">
+            <form action="{{ url_for('predict_data') }}" method="POST" id="passengerForm">
+
+                <!-- Section 1: Ticket Class & Cabin Tier -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-2 pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+                        <i class="bi bi-ticket-perforated text-cyan-600 dark:text-cyan-400"></i>
+                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">1. Passenger Class & Accommodation</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <label class="relative flex flex-col p-4 rounded-xl border-2 border-slate-200 dark:border-slate-800 hover:border-cyan-500 dark:hover:border-cyan-500 cursor-pointer transition-all has-[:checked]:border-cyan-600 has-[:checked]:bg-cyan-50/50 dark:has-[:checked]:bg-cyan-950/30">
+                            <input type="radio" name="pclass" value="1" class="sr-only" required id="pclass1">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-bold text-slate-900 dark:text-white text-base">1st Class</span>
+                                <i class="bi bi-star-fill text-amber-500"></i>
+                            </div>
+                            <span class="text-xs text-slate-500 dark:text-slate-400">Promenade Deck Suites & Salon Staterooms</span>
+                        </label>
+
+                        <label class="relative flex flex-col p-4 rounded-xl border-2 border-slate-200 dark:border-slate-800 hover:border-cyan-500 dark:hover:border-cyan-500 cursor-pointer transition-all has-[:checked]:border-cyan-600 has-[:checked]:bg-cyan-50/50 dark:has-[:checked]:bg-cyan-950/30">
+                            <input type="radio" name="pclass" value="2" class="sr-only" id="pclass2">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-bold text-slate-900 dark:text-white text-base">2nd Class</span>
+                                <i class="bi bi-shield-check text-slate-400"></i>
+                            </div>
+                            <span class="text-xs text-slate-500 dark:text-slate-400">Mid-deck Cabins & Dining Saloons</span>
+                        </label>
+
+                        <label class="relative flex flex-col p-4 rounded-xl border-2 border-slate-200 dark:border-slate-800 hover:border-cyan-500 dark:hover:border-cyan-500 cursor-pointer transition-all has-[:checked]:border-cyan-600 has-[:checked]:bg-cyan-50/50 dark:has-[:checked]:bg-cyan-950/30">
+                            <input type="radio" name="pclass" value="3" class="sr-only" id="pclass3" checked>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-bold text-slate-900 dark:text-white text-base">3rd Class</span>
+                                <i class="bi bi-people text-slate-400"></i>
+                            </div>
+                            <span class="text-xs text-slate-500 dark:text-slate-400">Lower Deck Steerage Quarters</span>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="sex" class="form-label">Enter your Gender</label>
-                    <div class="d-flex gap-4">
-                        <div class="form-check">
-                            <input type="radio" id="male" value="male" name="sex" class="form-check-input" required>
-                            <label for="male" class="form-check-label">Male</label>
+                <!-- Section 2: Demographics & Family Status -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-2 pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+                        <i class="bi bi-person-badge text-cyan-600 dark:text-cyan-400"></i>
+                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">2. Passenger Demographics & Family</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Gender -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Gender</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-cyan-500 cursor-pointer text-xs font-semibold has-[:checked]:bg-cyan-600 has-[:checked]:text-white has-[:checked]:border-cyan-600 transition-colors">
+                                    <input type="radio" name="sex" value="male" id="sexMale" class="sr-only" required checked>
+                                    <i class="bi bi-gender-male"></i>
+                                    <span>Male</span>
+                                </label>
+                                <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-cyan-500 cursor-pointer text-xs font-semibold has-[:checked]:bg-cyan-600 has-[:checked]:text-white has-[:checked]:border-cyan-600 transition-colors">
+                                    <input type="radio" name="sex" value="female" id="sexFemale" class="sr-only">
+                                    <i class="bi bi-gender-female"></i>
+                                    <span>Female</span>
+                                </label>
+                            </div>
                         </div>
-                        <div class="form-check">
-                            <input type="radio" id="female" value="female" name="sex" class="form-check-input">
-                            <label for="female" class="form-check-label">Female</label>
+
+                        <!-- Age -->
+                        <div>
+                            <label for="age" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                                Age in Years
+                                <span class="text-slate-400 font-normal">(0 - 100)</span>
+                            </label>
+                            <div class="relative">
+                                <input type="number" id="age" name="age" min="0" max="100" step="1" value="28" required
+                                    class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                                <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-400">yrs</span>
+                            </div>
+                        </div>
+
+                        <!-- Siblings / Spouses (SibSp) -->
+                        <div>
+                            <label for="sibsp" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                                Siblings / Spouse Aboard
+                            </label>
+                            <input type="number" id="sibsp" name="sibsp" min="0" max="10" step="1" value="0" required
+                                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                        </div>
+
+                        <!-- Parents / Children (Parch) -->
+                        <div>
+                            <label for="parch" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                                Parents / Children Aboard
+                            </label>
+                            <input type="number" id="parch" name="parch" min="0" max="10" step="1" value="0" required
+                                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-cyan-500">
                         </div>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="age" class="form-label">Age in years</label>
-                    <input type="number" placeholder="Enter the age of the person" id="age" name="age"
-                        class="form-control" min="0" max="100" required>
+                <!-- Section 3: Fare & Port of Embarkation -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-2 pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+                        <i class="bi bi-geo-alt text-cyan-600 dark:text-cyan-400"></i>
+                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">3. Ticket Fare & Embarkation Port</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Fare -->
+                        <div>
+                            <label for="fare" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                                Ticket Fare (£ British Pounds in 1912)
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-mono text-slate-400">£</span>
+                                <input type="number" id="fare" name="fare" min="0" max="600" step="0.01" value="14.45" required
+                                    class="w-full pl-8 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                            </div>
+                            <span class="text-[11px] text-slate-400 mt-1 block">Typical fares: 3rd Class (£7 - £15), 2nd Class (£12 - £30), 1st Class (£30 - £512)</span>
+                        </div>
+
+                        <!-- Embarked -->
+                        <div>
+                            <label for="embarked" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                                Port of Embarkation
+                            </label>
+                            <select id="embarked" name="embarked" required
+                                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                                <option value="S" selected>Southampton, England (S)</option>
+                                <option value="C">Cherbourg, France (C)</option>
+                                <option value="Q">Queenstown, Ireland (Q)</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="sibsp" class="form-label">No. of Siblings/Spouses abroad</label>
-                    <input type="number" placeholder="Enter the number" id="sibsp" name="sibsp" class="form-control"
-                        min="0" max="100" required>
+
+                <!-- Submit Button -->
+                <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end">
+                    <button type="submit" id="submitBtn"
+                        class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-cyan-600 via-cyan-500 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-lg shadow-cyan-500/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="bi bi-life-preserver text-lg"></i>
+                        <span>Predict Passenger Survival</span>
+                        <div id="btnSpinner" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    </button>
                 </div>
-                <div class="mb-3">
-                    <label for="parch" class="form-label">No. of Parents/Children aboard</label>
-                    <input type="number" placeholder="Enter the number" id="parch" name="parch" class="form-control"
-                        min="0" max="100" required>
-                </div>
-                <div class="mb-3">
-                    <label for="fare" class="form-label">Enter the fare charged</label>
-                    <input type="number" placeholder="Enter the Passenger fare" id="fare" name="fare"
-                        class="form-control" min="0" max="10000" required>
-                </div>
-                <div class="mb-3">
-                    <label for="embarked" class="form-label">Port of Embarkation</label>
-                    <select name="embarked" id="embarked" class="form-select" required>
-                        <option value="">Select any value</option>
-                        <option value="C">Cherbourg</option>
-                        <option value="Q">Queenstown</option>
-                        <option value="S">Southampton</option>
-                    </select>
-                </div>
-                <input type="submit" value="Predict" class="btn btn-primary">
             </form>
-            <br>
-            <h3 class="text-center">OR</h3>
-            <br>
-            <h1 class="text-center">Upload a File</h1>
-            <br>
-            <a href="https://github.com/JuelBasak/DecisionTreeOnTitanic/blob/main/Sample%20File/test.csv"
-                target="_blank">File Structure Reference</a>
-            <br><br>
-
-            <form action="/predict_file" method="POST" enctype="multipart/form-data">
-                <input type="file" name="file" class="form-control" />
-                <br><br>
-                <input type="submit" value="Submit file" class="btn btn-primary">
-            </form>
-
-            {% if output %}
-            <div class="invalid">
-                {{output}}
-            </div>
-            {% endif %}
-
         </div>
 
-    </div>
+        <!-- Batch CSV Prediction Accordion -->
+        <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+            <details class="group">
+                <summary class="flex items-center justify-between font-semibold text-sm cursor-pointer list-none text-slate-900 dark:text-white">
+                    <div class="flex items-center gap-2">
+                        <i class="bi bi-file-earmark-spreadsheet text-cyan-600 dark:text-cyan-400"></i>
+                        <span>Batch Passenger Evaluation (Upload CSV)</span>
+                    </div>
+                    <span class="transition group-open:rotate-180">
+                        <i class="bi bi-chevron-down"></i>
+                    </span>
+                </summary>
+                <div class="pt-4 mt-3 border-t border-slate-100 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-400">
+                    <p class="mb-4 text-xs">
+                        Upload a CSV containing columns: <code class="font-mono text-cyan-600 dark:text-cyan-400">Pclass, Sex, Age, SibSp, Parch, Fare, Embarked</code> to run inference across multiple passenger records at once.
+                    </p>
+                    <form action="{{ url_for('predict_file') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-center gap-3">
+                        <input type="file" name="file" accept=".csv" required
+                            class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-50 file:text-cyan-700 dark:file:bg-cyan-950/60 dark:file:text-cyan-300 hover:file:bg-cyan-100">
+                        <button type="submit" class="w-full sm:w-auto px-5 py-2 rounded-xl text-xs font-semibold text-white bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors whitespace-nowrap">
+                            Run Batch Evaluation
+                        </button>
+                    </form>
+                </div>
+            </details>
+        </div>
+    </main>
 
+    <!-- Footer -->
+    <footer class="border-t border-slate-200/80 dark:border-slate-800/80 py-6 bg-white/50 dark:bg-slate-900/50 backdrop-blur">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+            <div>
+                Built with <span class="text-cyan-500">&hearts;</span> by <a href="https://thecuriousjuel.com" target="_blank" class="font-semibold text-slate-700 dark:text-slate-300 hover:underline">Biswajit</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <span>Decision Tree Classifier</span>
+                <span>&bull;</span>
+                <a href="https://github.com/thecuriousjuel/DecisionTreeOnTitanic.git" target="_blank" class="hover:underline flex items-center gap-1">
+                    <i class="bi bi-github"></i>
+                    <span>Repository</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Presets Logic -->
     <script>
-        function toggleMenu() {
-            var navbar = document.querySelector('.navbar');
-            navbar.classList.toggle('responsive');
+        function fillJackDawson() {
+            document.getElementById('pclass3').checked = true;
+            document.getElementById('sexMale').checked = true;
+            document.getElementById('age').value = 20;
+            document.getElementById('sibsp').value = 0;
+            document.getElementById('parch').value = 0;
+            document.getElementById('fare').value = 7.25;
+            document.getElementById('embarked').value = 'S';
         }
+        function fillRoseBukater() {
+            document.getElementById('pclass1').checked = true;
+            document.getElementById('sexFemale').checked = true;
+            document.getElementById('age').value = 17;
+            document.getElementById('sibsp').value = 0;
+            document.getElementById('parch').value = 1;
+            document.getElementById('fare').value = 120.00;
+            document.getElementById('embarked').value = 'S';
+        }
+        function fillCaptainSmith() {
+            document.getElementById('pclass1').checked = true;
+            document.getElementById('sexMale').checked = true;
+            document.getElementById('age').value = 62;
+            document.getElementById('sibsp').value = 0;
+            document.getElementById('parch').value = 0;
+            document.getElementById('fare').value = 50.00;
+            document.getElementById('embarked').value = 'S';
+        }
+
+        document.getElementById('passengerForm').addEventListener('submit', function() {
+            const btn = document.getElementById('submitBtn');
+            const spinner = document.getElementById('btnSpinner');
+            if (btn && spinner) {
+                btn.disabled = true;
+                btn.classList.add('opacity-80', 'cursor-not-allowed');
+                spinner.classList.remove('hidden');
+            }
+        });
     </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
-        crossorigin="anonymous"></script>
-
 </body>
-
 </html>
