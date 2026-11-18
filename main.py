@@ -108,7 +108,7 @@ def preprocess_and_model(df):
 if __name__ == '__main__':
     os.environ.pop("WERKZEUG_SERVER_FD", None)
     os.environ.pop("WERKZEUG_RUN_MAIN", None)
-    port = int(os.environ.get("TITANIC_PORT", 5104))
+    port = int(os.environ.get("PORT", os.environ.get("TITANIC_PORT", 5204)))
     host = os.environ.get("HOST", "127.0.0.1")
     print(f"🚀 Titanic Survival App running on http://{host}:{port}")
     app.run(host=host, port=port, debug=False, use_reloader=False)
